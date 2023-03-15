@@ -39,5 +39,5 @@ fn main() {
         .expect("Could not load model");
 
     let mut rng = thread_rng();
-    model.inference_with_prompt(&vocab, &inference_params, &prompt, &mut rng);
+    model.inference_with_prompt(&vocab, &inference_params, &prompt, &mut rng, None);
 }

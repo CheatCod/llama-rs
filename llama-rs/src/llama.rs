@@ -571,7 +571,8 @@ impl LlamaModel {
         params: &InferenceParams,
         prompt: &str,
         rng: &mut impl rand::Rng,
-    ) {
+        stop_sequence: Option<&str>,
+    ) -> String {
         let embd_inp = self.tokenize(vocab, prompt, true);
         let mut logits = Vec::new();
 
@@ -597,6 +598,8 @@ impl LlamaModel {
 
         let mut n_past = 0;
         let mut embd = Vec::new();
+
+        let mut ret_buf = String::new();
         while remaining_tokens > 0 {
             // predict
             if !embd.is_empty() {
@@ -641,6 +644,16 @@ impl LlamaModel {
                 // add it to the context
                 embd.push(id);
 
+                let word = &vocab.mapping[id as usize];
+
+                ret_buf.push_str(word);
+
+                if let Some(stop_sequence) = stop_sequence {
+                    if ret_buf.ends_with(stop_sequence) {
+                        break;
+                    }
+                }
+
                 // echo this to console
                 input_noecho = false;
 
@@ -672,6 +685,7 @@ impl LlamaModel {
                 break;
             }
         }
+        ret_buf
     }
 
     pub fn sample_top_p_top_k(
