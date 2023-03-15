@@ -60,6 +60,9 @@ pub struct LlamaModel {
     context: GgmlContext,
 }
 
+unsafe impl Send for LlamaModel {}
+
+unsafe impl Sync for LlamaModel {}
 pub struct InferenceParams {
     pub n_threads: i32,
     pub n_predict: usize,
